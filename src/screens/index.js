@@ -15,7 +15,7 @@ const RootStack = createStackNavigator(
     Success: SuccessScreen,
   },
   {
-    initialRouteName: 'AddAddress',
+    initialRouteName: 'Home',
   }
 );
 
