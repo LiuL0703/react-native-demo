@@ -53,5 +53,9 @@ export default StyleSheet.create({
   selectedTabText:{
     color: '#FFF',
     fontWeight: 'bold'
+  },
+  clazzImage:{
+    width: imageWidth,
+    height: 250,
   }
 });
