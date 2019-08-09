@@ -56,6 +56,5 @@ export default StyleSheet.create({
   },
   clazzImage:{
     width: imageWidth,
-    height: 250,
   }
 });

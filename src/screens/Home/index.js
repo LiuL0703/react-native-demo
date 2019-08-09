@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableHighlight
 } from 'react-native';
+import FullWidthImage from 'react-native-fullwidth-image'
 // import axios from 'axios';
 import styles from './style.js';
 // import { CRISS_PAGE_DETAIL } from '../../api/index';
@@ -51,7 +52,7 @@ function ImageList(gradeImageList){
   return (
     <View>
       {gradeImageList.map((image)=>{
-        return <Image key={image} source={{uri:image}} style={styles.clazzImage} />
+        return <FullWidthImage key={image} source={{uri:image}} style={styles.clazzImage} />
       })}
     </View>
   );
