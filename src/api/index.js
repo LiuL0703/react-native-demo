@@ -1,5 +1,6 @@
-export const CRISS_PAGE_DETAIL = 'https://m.gaotu100.com/internal-activities/criss/crissPage';
-export const CIRSS_ORDERINFO = 'https://m.gaotu100.com/internal-activities/criss/v2/crissOrderInfo';
-export const CRISS_GET_PASSCODE = 'https://m.gaotu100.com/api/user/v2/send_passcode';
-export const CRISS_LOGIN = 'https://m.gaotu100.com/api/user/v2/login_sms';
-export const CRISS_PAY = 'https://m.gaotu100.com/internal-activities/plan/pay';
+const base = 'https://ce0392e5-5fc6-4c7b-be21-adc703f9dc47.mock.pstmn.io';
+
+export const CRISS_PAGE_DETAIL = `${base}/criss/crissPage`;
+export const CIRSS_ORDERINFO = `${base}/criss/v2/crissOrderInfo`;
+export const CRISS_LOGIN = `${base}/user/v2/login_sms`;
+export const CRISS_PAY = `${base}/plan/pay`;
