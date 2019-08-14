@@ -5,12 +5,14 @@ const imageWidth = dimensions.width;
 
 export default StyleSheet.create({
   scrollView: {
-    // backgroundColor: '#',
+
   },
- 
+  
   body: {
-    // backgroundColor: Colors.white,
+    minHeight: dimensions.height,
+    flex: 1,
   },
+
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
