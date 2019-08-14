@@ -37,6 +37,7 @@ function ClazzTabList(gradeDetails,selectedClazz,handleSelectGrade){
         )}
         numColumns={3}
         keyExtractor={(item) => item.productId}
+        extraData={selectedClazz}
       />
       { 
         selectedClazz!== '' 
