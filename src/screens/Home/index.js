@@ -1,4 +1,4 @@
-import React, { useState, useEffect,Fragment } from 'react';
+import React, { useState, useEffect,useReducer,Fragment } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   Button,
 } from 'react-native';
+import { Spinner } from 'native-base';
 import FullWidthImage from 'react-native-fullwidth-image'
 import axios from 'axios';
 import styles from './style.js';
@@ -46,17 +47,70 @@ function ClazzTabList(gradeDetails,selectedClazz,handleSelectGrade){
   );
 }
 
-function JoinNow(props){
+const dataFetchReducer = (state, action) => {
+  switch(action.type){
+    case 'FETCH_INIT':
+      return { ...state, isLoading: true, isError: false };
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case 'FETCH_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    default:
+      throw new Error();
+  }
+};
+
+const useGradeDetailApi = () => {
+  const [state, dispatch] = useReducer(dataFetchReducer, {
+    isLoading: false,
+    isError: false,
+    data: [],
+  });
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      dispatch({ type: 'FETCH_INIT' });
+      try{
+        const result = await axios.post(CRISS_PAGE_DETAIL);
+        dispatch({ type: 'FETCH_SUCCESS', payload: result.data});
+      } catch (error){
+        dispatch({ type: 'FETCH_FAILURE' }); 
+      }
+    }
+
+    fetchData();
+  },[]);
+
+  return [state];
+}
+function JoinNow(props,gradeDetails,selectedClazz){
   function handleJoin(){
+    if(gradeDetails.length < 1 || selectedClazz === ''){
+      return;
+    }
     props.navigation.navigate('BindPhone', {
-      productId: 3396283866842112,
-      gradeCode: '06'
+      productId: gradeDetails[selectedClazz].productId,
+      gradeCode: gradeDetails[selectedClazz].gradeCode
     });
   }
   return (
     <View style={{display:"flex", flexDirection: "row", flex: 1, position: 'absolute',bottom: 0, borderTopWidth: 1, borderTopColor: '#ccc'}}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center",height: 60, backgroundColor:'#fff' }}>
-        <Text style={{fontSize: 30, color:'#fd494a'}}>￥35</Text>
+        <Text style={{fontSize: 25, color:'#fd494a'}}>
+        {selectedClazz !== ''
+          ? `￥${gradeDetails[selectedClazz].currentPrice}`
+          : '请选择年级'
+        }
+        </Text>
       </View>
       <View style={{backgroundColor: '#fd494a', width: 150 ,flex: 1, justifyContent: "center", alignItems: "center",}}>
         <Button 
@@ -84,16 +138,16 @@ function ImageList(gradeImageList){
 const HomePage = (props) => {
   const [gradeDetails, setGradeDetails] = useState([]);
   const [selectedClazz,setSelectedClazz] = useState('');
-  const [headImage, setHeadImage] = useState('');
+  const [headImage, setHeadImage] = useState(null);
 
+  const [{ data, isLoading, isError }] = useGradeDetailApi();
 
   useEffect(()=>{
-    axios.post(CRISS_PAGE_DETAIL,{}).then((res)=>{
-      let data = res.data;
+    if(data.length !== 0){
       setGradeDetails(data.data.gradeDetails||[]);
       setHeadImage(data.data.homePicture);
-    });
-  },[]);
+    }
+  })
 
 
   function handleSelectGrade(value){
@@ -106,17 +160,24 @@ const HomePage = (props) => {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <View style={styles.body}>
-            <View>
-              <Image source={{uri:headImage}} style={styles.headImage} />
-            </View>
-            <View>
-              <Text style={styles.title}>请选择九月开学要上的年级</Text>
-            </View>
-            { gradeDetails.length > 0 ? ClazzTabList(gradeDetails,selectedClazz,handleSelectGrade):null}
-          </View>
+          {
+            isLoading || data.length === 0
+              ? <Spinner />
+              : <View style={styles.body}>
+                  <View>
+                    <Image source={{uri: headImage }} style={styles.headImage} />
+                  </View>
+                  <View>
+                    <Text style={styles.title}>请选择九月开学要上的年级</Text>
+                  </View>
+                  { gradeDetails.length > 0 ? ClazzTabList(gradeDetails,selectedClazz,handleSelectGrade):null}
+                </View>
+          }
+          {
+            isError && <Text>Someting went wrong!</Text>
+          }
         </ScrollView>
-        {JoinNow(props)}
+        { isLoading ? null : JoinNow(props,gradeDetails,selectedClazz)}
       </SafeAreaView>
     </Fragment>
   );
